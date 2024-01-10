@@ -2972,16 +2972,15 @@ array inner(const array& a, const array& b, StreamOrDevice s /* = {} */) {
 
 /** Compute the matrix product of A and B and add C to the result */
 array addmm(
-    const array& in_c, 
-    const array& in_a, 
-    const array& in_b, 
+    const array& in_c,
+    const array& in_a,
+    const array& in_b,
     const float& alpha /* = 1.f */,
     const float& beta /* = 1.f */,
     StreamOrDevice s /* = {} */) {
-
-  // Divert in the case of vector-matrix multiplication 
+  // Divert in the case of vector-matrix multiplication
   // TODO: Add the needed specializtion
-  if(in_a.ndim() == 1 || in_b.ndim() == 1) {
+  if (in_a.ndim() == 1 || in_b.ndim() == 1) {
     array X = matmul(in_a, in_b, s);
     array alpha_arr = array(alpha, X.dtype());
     array aX = multiply(alpha_arr, X, s);
@@ -2990,7 +2989,7 @@ array addmm(
     array bY = multiply(beta_arr, in_c, s);
     return add(aX, bY, s);
   }
-  
+
   auto a = in_a;
   auto b = in_b;
   auto c = in_c;
@@ -3069,13 +3068,11 @@ array addmm(
   c = broadcast_to(c, c_broadcast_shape, s);
 
   auto out = array(
-      out_shape, 
-      out_type, 
-      std::make_unique<AddMM>(to_stream(s), 
-      alpha, 
-      beta), 
+      out_shape,
+      out_type,
+      std::make_unique<AddMM>(to_stream(s), alpha, beta),
       {a, b, c});
-  
+
   return out;
 }
 
